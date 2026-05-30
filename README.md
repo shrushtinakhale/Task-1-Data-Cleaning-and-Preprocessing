@@ -1,172 +1,111 @@
 # Task 1: Data Cleaning and Preprocessing
+# 🛒 Online Retail — Cleaned Dataset
 
-## Objective
-
-The objective of this task was to clean and preprocess a raw retail dataset by handling missing values, duplicate records, invalid entries, inconsistent formats, and preparing the data for further analysis.
-
----
-
-## Dataset Information
-
-- Dataset: Online Retail II
-- Source: Online Retail Dataset
-- File Format: Excel (.xlsx)
-- Sheet Used: Year 2010-2011
-- Original Rows: 541,910
+A cleaned and preprocessed version of the UCI Online Retail Dataset,
+ready for data analysis, machine learning, and business intelligence projects.
 
 ---
 
-## Tools Used
+## 📁 Files
 
-- Microsoft Excel
-- Python
-- Pandas
-- Jupyter Notebook / VS Code
-
----
-
-## Data Cleaning Workflow
-
-### Step 1: Initial Cleaning in Excel
-
-Performed the following operations using Microsoft Excel:
-
-- Removed leading and trailing spaces from:
-  - Invoice
-  - StockCode
-  - Description
-  - Country
-
-- Identified missing values using filters
-
-- Removed rows with:
-  - Missing Customer ID
-  - Missing Description
-
-- Removed cancelled invoices (Invoice numbers starting with "C")
-
-- Removed records with:
-  - Quantity ≤ 0
-  - Price ≤ 0
-
-- Removed duplicate records
+| File | Description |
+|------|-------------|
+| `online_retail_cleaned.csv` | Main cleaned dataset (~20MB, 282K rows) |
+| `country_legend.csv` | Country code to country name mapping |
+| `online_retail_cleaning.py` | Python cleaning script |
 
 ---
 
-### Step 2: Data Processing in Python (Pandas)
+## 📊 Dataset Overview
 
-Performed additional preprocessing using Python:
+- **Source:** UCI Machine Learning Repository
+- **Original Rows:** 541,910
+- **Cleaned Rows:** 282,457
+- **Columns:** 9
 
-- Loaded cleaned Excel dataset using Pandas
+### Columns
 
-- Converted Customer ID from float to integer format
-
-  Example:
-
-  ```
-  17850.0 → 17850
-  ```
-
-- Standardized InvoiceDate format
-
-  ```
-  YYYY-MM-DD HH:MM:SS
-  ```
-
-- Created a new feature:
-
-  ```
-  TotalAmount = Quantity × Price
-  ```
-
-- Rounded TotalAmount values to 2 decimal places
-
-- Verified data types
-
-- Checked for remaining null values
-
-- Exported final cleaned dataset to CSV format
+| Column | Type | Description |
+|--------|------|-------------|
+| `Invoice` | string | Unique invoice number |
+| `StockCode` | string | Product/item code |
+| `Description` | string | Product name |
+| `Quantity` | integer | Number of units purchased |
+| `InvoiceDate` | date | Date of transaction (YYYY-MM-DD) |
+| `Price` | float | Unit price in GBP (£) |
+| `Customer ID` | string | Unique customer identifier |
+| `Country` | string | Encoded country code (see country_legend.csv) |
+| `TotalAmount` | float | Quantity × Price |
 
 ---
 
-## Cleaning Summary
+## 🧹 Cleaning Steps
 
-| Operation | Rows Removed |
-|------------|-------------|
-| Missing Customer ID | 135,080 |
-| Missing Description | 1,454 |
-| Cancelled Invoices | 9,288 |
-| Invalid Quantity | 10,624 |
-| Invalid Price | 2,517 |
-| Duplicate Records | 5,268 |
-
----
-
-## Final Dataset
-
-- Rows: 392,693
-- Columns: 9
-- Null Values: 0
-- Duplicate Records: 0
+1. Removed 5,268 duplicate rows
+2. Dropped 135,037 rows with missing Customer ID
+3. Removed 8,872 cancellation invoices (Invoice starting with 'C')
+4. Removed rows with negative or zero Quantity / Price
+5. Removed extreme Quantity outliers (above 99.9th percentile)
+6. Standardized text formatting (trimmed whitespace, title case)
+7. Encoded country names as short codes to reduce file size
+8. Added TotalAmount derived column (Quantity × Price)
+9. Sampled to keep final file under 20MB
 
 ---
 
-## New Feature Added
+## 🐍 Load in Python
 
-### TotalAmount
+```python
+import pandas as pd
 
-Formula:
+# Load dataset
+df = pd.read_csv("online_retail_cleaned.csv")
 
-```
-TotalAmount = Quantity × Price
-```
+# Decode country codes
+legend = pd.read_csv("country_legend.csv").set_index("Code")["Country"]
+df["Country"] = df["Country"].map(legend)
 
-Purpose:
+# Convert date
+df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"])
 
-- Calculate transaction value
-- Useful for sales and revenue analysis
-
----
-
-## Output Files
-
-### Input
-
-- online_retail_II.xlsx
-
-### Output
-
-- online_retail_2010_2011_cleaned.csv
-
----
-
-## Skills Demonstrated
-
-- Data Cleaning
-- Data Preprocessing
-- Excel Data Handling
-- Pandas Data Manipulation
-- Missing Value Treatment
-- Duplicate Removal
-- Data Standardization
-- Feature Engineering
-- Data Quality Assessment
-
----
-
-## Repository Structure
-
-```
-Task-1-Data-Cleaning-and-Preprocessing/
-│
-├── online_retail_II.xlsx
-├── online_retail_2010_2011_cleaned.csv
-├── data_cleaning.py
-├── README.md
+print(df.shape)
+print(df.head())
 ```
 
 ---
 
-## Conclusion
+## 📊 Load in Excel
 
-The Online Retail II dataset was successfully cleaned using a combination of Excel and Python. Missing values, duplicate records, cancelled transactions, and invalid entries were removed. Data formats were standardized and a new transaction value feature was created. The final dataset is clean, consistent, and ready for analysis or visualization.# Task-1-Data-Cleaning-and-Preprocessing
+1. Open **Microsoft Excel**
+2. Go to **Data** tab → **Get Data** → **From File** → **From Text/CSV**
+3. Select `online_retail_cleaned.csv` → Click **Import**
+4. In the preview window click **Load**
+5. For country names, open `country_legend.csv` separately and use
+   **VLOOKUP** to decode the Country column:
+   ```
+   =VLOOKUP(A2, country_legend.csv!$A:$B, 2, 0)
+   ```
+
+> **Tip:** For large file performance in Excel, go to
+> **Data → From Table/Range** and use **Power Query** to filter
+> rows before loading.
+
+---
+
+## 💡 Use Cases
+
+- Customer Segmentation (RFM Analysis)
+- Sales Trend Analysis
+- Product Recommendation Systems
+- Time Series Forecasting
+- Market Basket Analysis
+
+---
+
+## 📜 License
+
+Original data from
+KAGGLE
+For research and educational use only.
+
+
